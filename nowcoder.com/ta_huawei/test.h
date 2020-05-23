@@ -14,14 +14,14 @@ using namespace std;
 #ifdef TEST
 
 #define TEST_SHOW_ARRAY(a,l) \
-    for (int i=0; i<l; i++) \
-        std::cout << a[i] << " "; \
+    for (int ii=0; ii<(l); ii++) \
+        std::cout << a[ii] << " "; \
     std::cout << endl;
 
 #define TEST_SHOW_ARRAY2(a,r,c) \
-    for (int i=0; i<r; i++) {\
-        for (int j=0; j<c; j++) \
-            std::cout << a[i][j] << " "; \
+    for (int ii=0; ii<(r); ii++) {\
+        for (int ij=0; ij<(c); ij++) \
+            std::cout << a[ii][ij] << " "; \
         std::cout << endl; \
     } 
 

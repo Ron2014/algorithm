@@ -4,6 +4,10 @@ THREAD_COUNT = 4
 isFinished = False
 cond = threading.Condition()
 
+def test_print(*args):
+    count = len(args)
+    sys.stderr.write( ("%s "*count + '\n') % (args))
+
 class MyThread(threading.Thread):
     def __init__(self, id, leader, args=None):
         super(MyThread, self).__init__()
@@ -24,13 +28,13 @@ class MyThread(threading.Thread):
 
             if cond.acquire(True):
                 while len(g_write)%THREAD_COUNT != self.__id:
-                    # print("thread", self.__id, "wait")
+                    test_print("thread", self.__id, "wait")
                     if isFinished:
                         cond.release()
                         return
                     cond.wait()
 
-                # print("thread", self.__id, "work")
+                test_print("thread", self.__id, "work")
                 g_write.append(chr(ord('A')+self.__id))
                 if self.__leader: count-=1
                 cond.notify_all()
@@ -39,9 +43,9 @@ class MyThread(threading.Thread):
         if self.__leader:
             if cond.acquire(True):
                 while len(g_write) < self.__args*THREAD_COUNT:
-                    # print("thread", self.__id, "wait finish")
+                    test_print("thread", self.__id, "wait finish")
                     cond.wait()
-                # print("thread", self.__id, "set finish")
+                test_print("thread", self.__id, "set finish")
                 isFinished = True
                 cond.notify_all()
                 cond.release()
@@ -61,5 +65,5 @@ while True:
         threads[i].start()
     for i in xrange(THREAD_COUNT):
         threads[i].join()
-    print "".join(g_write)
+    print("".join(g_write))
     

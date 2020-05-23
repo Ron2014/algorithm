@@ -21,11 +21,6 @@ std::set<int> sUnpairedIdx;
 
 int aNumbers[101];
 
-typedef struct num_node {
-    int num;
-    num_node *next;
-}num_node;
-
 bool isPrime(int num) {
     for (int i=2; i < num/2; i++) {
         if (num % i == 0) return false;
