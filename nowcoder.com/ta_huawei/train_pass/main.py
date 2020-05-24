@@ -44,4 +44,4 @@ while True:
 
     result_list = sorted(list(results))
     for train in result_list:
-        print " ".join(map(str, train))
+        print(" ".join(map(str, train)))

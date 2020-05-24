@@ -1,6 +1,25 @@
 #include <iostream>
-#include <cstring>
+#include <memory.h>
+#include <vector>
+#include <algorithm>
+#include <math.h>
 using namespace std;
+
+/**
+ * repeat command in shell:
+ * for i in {1..100}; do echo hello; done
+ * 
+ * infinite:
+ * while true; do echo hello; sleep 1; done
+*/
+
+struct RandomListNode {
+    int label;
+    struct RandomListNode *next, *random;
+    RandomListNode(int x) :
+            label(x), next(NULL), random(NULL) {
+    }
+};
 
 struct TreeNode {
     int val;
@@ -35,8 +54,8 @@ struct ListNode {
 
 #define TEST_SHOW_ARRAY2(a,r,c) { \
     for (int i=0; i<(r); i++) {\
-        for (int i=0; i<(c); i++) \
-            std::cout << a[i][i] << " "; \
+        for (int j=0; j<(c); j++) \
+            std::cout << a[i][j] << " "; \
         std::cout << endl; \
     } }
 
@@ -93,6 +112,11 @@ struct ListNode {
             cin >> a[i]; \
     } 
 
+#define INPUT_VECTOR(a,l,t) \
+    INPUT_ARRAY(a##Tmp,l,t) \
+    vector<t> a(a##Tmp, a##Tmp+l); \
+    DELETE_ARRAY(a##Tmp);
+
 #define DELETE_ARRAY(a) \
     delete[] a;
 
@@ -105,7 +129,7 @@ struct ListNode {
 
 #define INIT_ARRAY_V(a,l,t,v) \
     INIT_ARRAY(a,l,t) \
-    memset(a, v, sizeof(t)*(l)); \
+    memset(a, (int)v, sizeof(t)*(l)); \
 
 #define INIT_ARRAY2_V(a,r,c,t,v) \
     t **a = new t*[r]; \
@@ -131,22 +155,83 @@ struct ListNode {
     } \
     delete[] a;
 
-#define SHOW_LINKLIST(h,t,v,n) \
+#define INPUT_LINKLIST(h,l,t) { \
+    t *pTail = NULL, *node; \
+    int n; \
+    while (l--) { \
+        cin>>n;  \
+        node = new t(n); \
+        if (pTail) { \
+            pTail->next = node; \
+            pTail = node; \
+        } else \
+            h = pTail = node; \
+    } \
+}
+
+#define SHOW_LINKLIST(h,t) \
     { \
         t *ph = h; \
         while (ph) { \
-            cout << ph->m_##v << " "; \
-            ph = ph->m_##n; \
+            cout << ph->val << " "; \
+            ph = ph->next; \
         } \
         cout << endl; \
     }
 
-#define DELETE_LINKLIST(h,t,n) \
+#define DELETE_LINKLIST(h,t) \
     while (h) { \
-        t *tmp = h->m_##n; \
+        t *tmp = h->next; \
         delete h; \
         h = tmp; \
     }
+
+TreeNode* BuildBinaryTree(vector<int>::iterator pre_begin, vector<int>::iterator pre_end, \
+    vector<int>::iterator vin_begin, vector<int>::iterator vin_end) {
+    if(pre_begin == pre_end) return NULL;
+    
+    int root_val = *pre_begin;
+    TreeNode *node = new TreeNode(root_val);
+
+    int len = distance(pre_begin, pre_end);
+    if (len>1) {
+        int mid_pos = distance(vin_begin, find(vin_begin, vin_end, root_val));
+
+        if (mid_pos>0) {
+            node->left = BuildBinaryTree(pre_begin+1, pre_begin+1+mid_pos, vin_begin, vin_begin+mid_pos);
+        }
+
+        if (mid_pos<len-1) {
+            node->right = BuildBinaryTree(pre_begin+1+mid_pos, pre_end, vin_begin+mid_pos+1, vin_end);
+        }
+    }
+    return node;
+}
+
+#define INPUT_TREE(h,lv,t) t* h; \
+{ \
+    int total_count = pow(2, lv)-1; \
+    INIT_ARRAY_V(pNodes,total_count,t*,NULL); \
+    int count = 1, iNum, idx0, idx1; \
+    t *node; \
+    string text; \
+    for (int i=0; i<lv; i++) { \
+        for (int j=0; j<count && cin>>text; j++) { \
+            if (text[0]=='#') continue; \
+            iNum = atoi(text.c_str()); \
+            idx0 = pow(2,i)-1+j; \
+            pNodes[idx0] = new t(iNum); \
+            if (i>0) { \
+                idx1 = pow(2,i-1)-1+j/2; \
+                if (j%2) pNodes[idx1]->right = pNodes[idx0]; \
+                else pNodes[idx1]->left = pNodes[idx0]; \
+            } \
+        } \
+        count *= 2; \
+    } \
+    h = pNodes[0]; \
+    DELETE_ARRAY(pNodes);\
+}
 
 void _PRE_SHOW_TREE(TreeNode *root, int depth) {
     cout << root->val << " ";
@@ -169,7 +254,9 @@ void _PRE_SHOW_TREE(TreeNode *root, int depth) {
 #endif
 }
 
-#define PRE_SHOW_TREE(root) _PRE_SHOW_TREE(root, 0)
+#define PRE_SHOW_TREE(root) \
+    TEST_HINT(------) \
+    _PRE_SHOW_TREE(root, 0)
 
 void _MID_SHOW_TREE(TreeNode *root, int depth) {
     if (root->left) _MID_SHOW_TREE(root->left, depth+1);
