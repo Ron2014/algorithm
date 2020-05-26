@@ -8,4 +8,5 @@
 !*.lua
 !*.md
 !case*
+!README*
 

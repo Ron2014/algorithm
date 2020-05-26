@@ -1,7 +1,9 @@
 #include "../test.h"
+
 #include <queue>
 class Solution {
 public:
+    // WAY 1. queue
     vector<int> PrintFromTopToBottom(TreeNode* root) {
         queue<TreeNode *> qLevel;
         qLevel.push(root);

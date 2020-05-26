@@ -46,7 +46,7 @@ public:
 
 int main() {
     int l0, l1;
-    ListNode *link0, *link1, *node;
+    ListNode *node;
     Solution s;
     while(cin>>l0>>l1) {
         INPUT_LINKLIST(link0, l0, ListNode);

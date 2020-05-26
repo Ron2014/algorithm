@@ -32,7 +32,6 @@ public:
 
 int main() {
     int n1, n2;
-    ListNode *l1, *l2;
     Solution s;
     while (cin>>n1>>n2) {
         INPUT_LINKLIST(l1, n1, ListNode);

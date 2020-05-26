@@ -5,6 +5,8 @@
 #include <math.h>
 using namespace std;
 
+#define TEST
+
 /**
  * repeat command in shell:
  * for i in {1..100}; do echo hello; done
@@ -12,6 +14,16 @@ using namespace std;
  * infinite:
  * while true; do echo hello; sleep 1; done
 */
+
+struct TreeLinkNode {
+    int val;
+    struct TreeLinkNode *left;
+    struct TreeLinkNode *right;
+    struct TreeLinkNode *next;
+    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
+        
+    }
+};
 
 struct RandomListNode {
     int label;
@@ -26,6 +38,7 @@ struct TreeNode {
     TreeNode *left;
     TreeNode *right;
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+    TreeNode() : left(NULL), right(NULL) {}
 };
 
 struct ListNode {
@@ -34,9 +47,10 @@ struct ListNode {
       ListNode(int x) :
             val(x), next(NULL) {
       }
+      ListNode() :
+            next(NULL) {
+      }
 };
-
-#define TEST
 
 /**
  * marco 定义，而不是 inline void 函数定义
@@ -60,13 +74,13 @@ struct ListNode {
     } }
 
 #define TEST_HINT(t) \
-    std::cout << #t << endl;
+    std::cout << #t << endl
 
 #define TEST_INFO(t,v) \
-    std::cout << #t << v << endl;
+    std::cout << #t << v << endl
 
 #define TEST_INFO2(t,i,j) \
-    std::cout << #t << i << " " << j << endl;
+    std::cout << #t << i << " " << j << endl
 
 #define TEST_DEPTH(depth, v) {\
     for(int i=0; i<(depth); i++) \
@@ -87,6 +101,9 @@ struct ListNode {
 #define TEST_HINT(t)
 #define TEST_INFO(t,v)
 #define TEST_INFO2(t,i,j)
+#define TEST_DEPTH(depth, v) 
+#define TEST_DEPTH_INFO(t,v,d)
+#define TEST_DEPTH_INFO2(t,i,j,d)
 
 #endif
 
@@ -103,7 +120,7 @@ struct ListNode {
     } }
 
 #define INIT_ARRAY(a,l,t) \
-    t *a = new t[l];
+    t *a = new t[l]
         
 #define INPUT_ARRAY(a,l,t) \
     INIT_ARRAY(a,l,t); \
@@ -118,7 +135,7 @@ struct ListNode {
     DELETE_ARRAY(a##Tmp);
 
 #define DELETE_ARRAY(a) \
-    delete[] a;
+    delete[] a
 
 #define INIT_ARRAY2(a,r,c,t) \
     t **a = new t*[r]; \
@@ -128,7 +145,7 @@ struct ListNode {
     }
 
 #define INIT_ARRAY_V(a,l,t,v) \
-    INIT_ARRAY(a,l,t) \
+    INIT_ARRAY(a,l,t); \
     memset(a, (int)v, sizeof(t)*(l)); \
 
 #define INIT_ARRAY2_V(a,r,c,t,v) \
@@ -155,7 +172,8 @@ struct ListNode {
     } \
     delete[] a;
 
-#define INPUT_LINKLIST(h,l,t) { \
+#define INPUT_LINKLIST(h,l,t) t *h = NULL; \
+{ \
     t *pTail = NULL, *node; \
     int n; \
     while (l--) { \
@@ -175,6 +193,16 @@ struct ListNode {
         while (ph) { \
             cout << ph->val << " "; \
             ph = ph->next; \
+        } \
+        cout << endl; \
+    }
+
+#define SHOW_TREE_LINKLIST(h,t) \
+    { \
+        t *ph = h; \
+        while (ph) { \
+            cout << ph->val << " "; \
+            ph = ph->right; \
         } \
         cout << endl; \
     }
@@ -255,7 +283,7 @@ void _PRE_SHOW_TREE(TreeNode *root, int depth) {
 }
 
 #define PRE_SHOW_TREE(root) \
-    TEST_HINT(------) \
+    TEST_HINT(------); \
     _PRE_SHOW_TREE(root, 0)
 
 void _MID_SHOW_TREE(TreeNode *root, int depth) {

@@ -1,27 +1,32 @@
 #include "../test.h"
 
-#include <map>
+#include <math.h>
 class Solution {
-    static map<int, bool> ugly_backup;
 public:
-    bool _isUgly(int num) {
-        if (ugly_backup.find(num)!=ugly_backup.end())
-            return ugly_backup[num];
-        
-        bool value;
-        if (num==1) value = true;
-        else if (num%2==0) value = _isUgly(num/2);
-        else if (num%3==0) value = _isUgly(num/3);
-        else if (num%5==0) value = _isUgly(num/5);
-        else value = false;
-        ugly_backup[num] = value;
-        
-        return value;
-    }
     
     int GetUglyNumber_Solution(int index) {
-    
+        if (index < 7) return index;
+        int *aNums = new int[index];
+        aNums[0] = 1;
+        int idx2, idx3, idx5;
+        idx2 = idx3 = idx5 = 0;
+        for (int i=1; i<index; i++) {
+            aNums[i] = min(aNums[idx2]*2, min(aNums[idx3]*3, aNums[idx5]*5));
+            if (aNums[i]==aNums[idx2]*2) idx2++;
+            if (aNums[i]==aNums[idx3]*3) idx3++;
+            if (aNums[i]==aNums[idx5]*5) idx5++;
+        }
+        int ret = aNums[index-1];
+        delete[] aNums;
+        return ret;
     }
 };
 
-map<int, bool> Solution::ugly_backup;
+int main() {
+    int n;
+    Solution s;
+    while(cin>>n) {
+        cout << s.GetUglyNumber_Solution(n) << endl; 
+    }
+    return 0;
+}

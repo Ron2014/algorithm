@@ -1,7 +1,6 @@
 #include "../test.h"
 
 #include <sstream>
-#include <algorithm>
 #include <set>
 
 class Solution {
