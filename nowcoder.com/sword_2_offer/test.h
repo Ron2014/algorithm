@@ -261,6 +261,68 @@ TreeNode* BuildBinaryTree(vector<int>::iterator pre_begin, vector<int>::iterator
     DELETE_ARRAY(pNodes);\
 }
 
+void _GEN_TREE_LEVEL(vector<vector<TreeNode *> > &vLevels, int depth) {
+    bool more = false;
+    TreeNode *node;
+    vLevels.push_back({});
+    vector<TreeNode *> curLevel = vLevels[depth];
+    for (auto it=curLevel.begin(); it!=curLevel.end(); it++) {
+        node = *it;
+        if (node) {
+            more |= node->left || node->right;
+            vLevels[depth+1].push_back(node->left);
+            vLevels[depth+1].push_back(node->right);
+        } else {
+            vLevels[depth+1].push_back(NULL);
+            vLevels[depth+1].push_back(NULL);
+        }
+    }
+    if (more) {
+        _GEN_TREE_LEVEL(vLevels, depth+1);
+        return;
+    }
+    vLevels.pop_back();
+}
+
+void _SHOW_TREE(TreeNode *root) {
+    if (!root) return;
+
+    vector<vector<TreeNode *> > vLevels;
+    vLevels.push_back({});
+    vLevels[0].push_back(root);
+
+    _GEN_TREE_LEVEL(vLevels, 0);
+
+    int lvCount = vLevels.size();
+    int NODE_LEN = 2;
+    int MARGIN = 5;
+    int margin, len;
+    int max_len = vLevels[lvCount-1].size();
+    char fmt[10];
+
+    for (int i=0; i<lvCount; i++) {
+        len = vLevels[i].size();
+        margin = MARGIN+((max_len-len)/2)*NODE_LEN;
+        for (int j=0; j<margin; j++)
+            cout << " ";
+
+        for (int j=0; j<len; j++) {
+            if (j==len/2) {
+                sprintf(fmt, "%%%ds", NODE_LEN);
+                printf(fmt, " ");
+            }
+            if (vLevels[i][j]) {
+                sprintf(fmt, "%%%dd", NODE_LEN);
+                printf(fmt, vLevels[i][j]->val);
+            } else {
+                sprintf(fmt, "%%%ds", NODE_LEN);
+                printf(fmt, "#");
+            }
+        }
+        cout << endl;
+    }
+}
+
 void _PRE_SHOW_TREE(TreeNode *root, int depth) {
     cout << root->val << " ";
 #ifdef TEST
@@ -303,3 +365,7 @@ void _POS_SHOW_TREE(TreeNode *root, int depth) {
 }
 
 #define POS_SHOW_TREE(root) _POS_SHOW_TREE(root, 0)
+
+#define SHOW_TREE(root) \
+    TEST_HINT(------); \
+    _SHOW_TREE(root)
