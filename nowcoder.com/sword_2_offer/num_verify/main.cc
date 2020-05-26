@@ -1,51 +1,48 @@
 #include "../test.h"
 
-#ifdef TEST
-#define ASSERT(e,msg) \
-    if (!(e)) { \
-        cout << msg << endl; \
-        return false; \
-    }
-#else
-#define ASSERT(e, msg) \
-    if (!(e)) { \
-        return false; \
-    }
-#endif \
+#define N_STATE 9
 
-#include <algorithm>
 class Solution {
 public:
+    // char arr[N_STATE+1] = "+-n.ne+-n";  // +1 for '\0'
+    const char *arr = "+-n.ne+-n";
+    int turn[N_STATE+1][N_STATE+1] = {
+       //+  -  n  .  n  e  +  -  n  END
+        {1, 1, 1, 1, 0, 0, 0, 0, 0, 0},    // # start
+        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0},    // +
+        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0},    // -
+        {0, 0, 1, 1, 0, 1, 0, 0, 0, 1},    // n        ----- VALID END
+        {0, 0, 0, 0, 1, 0, 0, 0, 0, 1},    // .        ----- VALID END
+        {0, 0, 0, 0, 1, 1, 0, 0, 0, 1},    // n        ----- VALID END
+        {0, 0, 0, 0, 0, 0, 1, 1, 1, 0},    // e
+        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0},    // +
+        {0, 0, 0, 0, 0, 0, 0, 0, 1, 0},    // -
+        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1},    // n        ----- VALID END
+    };
 
-    bool isInteger(string &text) {
-
-    }
-
-    bool isDecimal(string &text) {
-
-    }
-
-    bool isNumeric(const char* chText)
+    bool isNumeric(const char* str)
     {
-        string text = chText;
-        int len = text.length();
-
-        string str_integer;
-        string str_decimal;
-
-        int dot_count = count(text.begin(), text.end(), '.');
-        ASSERT(dot_count==1 || dot_count==0, "dot count");
-
-        if (dot_count) {
-            int dot_pos = text.find('.');
-            str_integer = text.substr(0, dot_pos);
-            str_decimal = text.substr(dot_pos, len-dot_pos-1);
-        } else {
-            str_integer = text;
-            str_decimal = "";
+        int cur = 0, matched;
+        for (int i=0; str[i]; i++) {
+            matched = -1;
+            for (int j=0; j<N_STATE; j++) {
+                // cur: current state
+                // j: next state
+                if (turn[cur][j]) {     // can change
+                    if ( arr[j]=='n' && str[i]>='0' && str[i]<='9' ||
+                        arr[j]=='e' && (str[i]=='E' || str[i]=='e') ||
+                        arr[j]==str[i] ) {
+                            matched = j;
+                            break;
+                        }
+                }
+            }
+            if (matched<0) return false;    // no more state can change: invalid
+            cur = matched + 1;        // +1 for start
         }
-
-        return isInteger(str_integer) && isDecimal(str_decimal);
+        // TEST_INFO(state:, cur);
+        if (turn[cur][N_STATE]) return true;
+        return false;
     }
 
 };
