@@ -40,4 +40,19 @@ backgroundImage 支持环境变量读取.
 
 1. 修改Windows注册表
 2. 还是修改json文件方便些啊 >_<
-   
+
+## 最后
+
+老老实实的我, 还是不想用json做, 使用注册表API果然可以完成这些功能.
+
+所以对这个工程, 你只要
+
+1. cmake --build . --config Release
+2. 创建一个文件夹, 将 WallPaper.exe config.ini run.bat 扔过去
+3. WallPaper.exe 一定要在属性中设置 `run as administrator` (因为要改注册表)
+4. Windows Terminal 的 settings.json 配置 backgroundImage 改成 config.ini [NAME] 对应的值
+5. 然后起个 Windows 计划任务, 每分钟去跑 run.bat. 例如
+
+```batch
+schtasks /create /tn Living Wallpaper For Terminal /tr run.bat /sc minute /mo 1
+```
