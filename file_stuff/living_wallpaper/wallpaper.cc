@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    livetime = atoll(config.GetValue("TIME_OUT", "timeout"));
+    livetime = atoll(config.GetValue("TIME_OUT", "livetime"));
 
 	CSimpleIniA::TNamesDepend pathes;
     config.GetAllValues("PATH", "path", pathes);
