@@ -10,6 +10,29 @@
 
 #include <algorithm>
 
+static std::string::size_type 
+FindMax(std::string::size_type a, std::string::size_type b) {
+	if (a == std::string::npos) {
+		return b;
+	}
+
+	if (b == std::string::npos) {
+		return a;
+	}
+
+	return a > b ? a : b;
+}
+
+std::string getPath(const std::string& path) {
+	std::string::size_type pos = path.rfind("/");
+	// in case we are using backslashes on a platform that doesn't use backslashes
+	pos = FindMax(pos, path.rfind("\\"));
+	if (pos != std::string::npos) {
+		return path.substr(0, pos);
+	}
+	return "";
+}
+
 std::string getExtension(const std::string& fileName, bool includeDot) {
 	std::string::size_type dotPos = fileName.rfind(".");
 	if (dotPos != std::string::npos) {

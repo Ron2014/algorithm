@@ -41,7 +41,59 @@ void updateData(string &filepath, time_t &tm, time_t now, Node *node) {
     }
 }
 
-int main(int argc, char *argv[]) {
+// 真的会莫名其妙关掉一些窗口, 还是不要用
+HWND GetConsoleHwnd(void)
+{
+    #define MY_BUFSIZE 1024 // Buffer size for console window titles.
+    HWND hwndFound;         // This is what is returned to the caller.
+    char pszNewWindowTitle[MY_BUFSIZE]; // Contains fabricated
+                                        // WindowTitle.
+    char pszOldWindowTitle[MY_BUFSIZE]; // Contains original
+                                        // WindowTitle.
+
+    // Fetch current window title.
+
+    GetConsoleTitle(pszOldWindowTitle, MY_BUFSIZE);
+
+    // Format a "unique" NewWindowTitle.
+
+    wsprintf(pszNewWindowTitle,"%d/%d",
+                GetTickCount(),
+                GetCurrentProcessId());
+
+    // Change current window title.
+
+    SetConsoleTitle(pszNewWindowTitle);
+
+    // Ensure window title has been updated.
+
+    Sleep(1);
+
+    // Look for NewWindowTitle.
+
+    hwndFound = FindWindow(NULL, pszNewWindowTitle);
+
+    // Restore original window title.
+
+    SetConsoleTitle(pszOldWindowTitle);
+
+    return(hwndFound);
+}
+
+int main(int argc, char *argv[]) {  
+	HWND hwnd = GetConsoleHwnd();
+	ShowWindow(hwnd, false);
+
+    string path = getPath(__FILE__);
+#ifdef _WIN32
+    SetCurrentDirectory(path.c_str());
+#else
+    chdir(path.c_str());
+#endif
+
+    freopen("./out.log", "w", stdout);
+    freopen("./err.log", "w", stderr);
+
 	bool utf8 = true;
 	bool multiKey = true;
     CSimpleIniA config(utf8, multiKey);
@@ -50,6 +102,8 @@ int main(int argc, char *argv[]) {
     SI_Error rc = config.LoadFile(CONFIG);
     if (rc != SI_OK) {
         cout << "loading " << CONFIG << " ERROR" << endl;
+        fclose(stdout);
+        fclose(stderr);
         return 1;
     }
     
@@ -124,16 +178,20 @@ int main(int argc, char *argv[]) {
         // snprintf(s_tmp, BUF_LEN, "%s=\"%s\"", it3->pItem, filepath.c_str());
         // putenv(s_tmp);
         
-        snprintf(s_tmp, BUF_LEN, "\"%s\"", filepath.c_str());
-        setEnvVar(it3->pItem, s_tmp);
+        // snprintf(s_tmp, BUF_LEN, "\"%s\"", filepath.c_str());
+        setEnvVar(it3->pItem, filepath.c_str());
     }
 
     // save file
     rc = data.SaveFile(DATA);
     if (rc != SI_OK) {
         cout << "SAVING " << DATA << " ERROR" << endl;
+        fclose(stdout);
+        fclose(stderr);
         return 1;
     }
 
+    fclose(stdout);
+    fclose(stderr);
     return 0;
 }

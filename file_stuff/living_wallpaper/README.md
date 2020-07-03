@@ -56,3 +56,37 @@ backgroundImage 支持环境变量读取.
 ```batch
 schtasks /create /tn Living Wallpaper For Terminal /tr run.bat /sc minute /mo 1
 ```
+
+## Windows的窗口隐藏(后台运行)
+
+bat 的 start /B 没用
+
+cmd 的 没用
+
+```
+if "%1" == "h" goto begin 
+mshta vbscript:createobject("wscript.shell").run("%~nx0 h",0)(window.close)&&exit 
+:begin 
+```
+
+vsb 的 没用
+
+```
+DIM objShell 
+set objShell = wscript.createObject("wscript.shell") 
+iReturn = objShell.Run("cmd.exe /C run.bat", 0, TRUE)
+```
+
+CreateProcess 会有 crash
+
+只有两个方法最有效:
+
+1. shellexecute : 子进程是无窗口了, 但是父窗口还是会显示啊!
+2. 最简单的方法:
+
+```c
+	HWND hwnd = GetForegroundWindow();
+	ShowWindow(hwnd, false);
+```
+
+只是这个方法有个BUG, 程序触发时千万别切换窗口, 不然你的窗口就真找不到了.

@@ -1,1 +1,1 @@
-schtasks /create /tn Living Wallpaper For Terminal /tr run.bat /sc minute /mo 1
+schtasks /create /tn Living_Wallpaper_For_Terminal /tr %~dp0run.bat /sc minute /mo 1

@@ -18,7 +18,7 @@ void setEnvVar(const char *key, const char *value)
 
     if(ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, environmentKey , 0, KEY_SET_VALUE | KEY_READ , &hkResult)) //打开键environment
     {         
-        MessageBox(NULL, _T("访问注册表出错！\n请使用管理员帐户执行本程序！"), _T("ERROR"), MB_ICONERROR); 
+        cout << "access to register error! please run as Administrator!" << endl;
         return;
     }
 
