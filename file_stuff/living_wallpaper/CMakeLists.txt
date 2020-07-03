@@ -6,7 +6,7 @@ project(WallPaper VERSION 1.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(FILES ConvertUTF.h ConvertUTF.c SimpleIni.h wallpaper.cc)
+set(FILES ConvertUTF.h ConvertUTF.c SimpleIni.h path.h path.cc upenv.h upenv.cc wallpaper.cc)
 add_executable(WallPaper ${FILES})
 
 target_include_directories(WallPaper PUBLIC

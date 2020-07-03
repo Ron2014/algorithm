@@ -3,21 +3,14 @@
 #include <vector>
 #include <string>
 #include <time.h>
-// #include <cstdlib>
-#include <stdlib.h>
 #include "SimpleIni.h"
+#include "path.h"
+#include "upenv.h"
 using namespace std;
 
 #define CONFIG "config.ini"
 #define DATA "data.ini"
-
-#if _WIN32
-#include <windows.h>
-#include <io.h>
-#else
-#include <errno.h>
-#include <dirent.h>
-#endif
+#define BUF_LEN 256
 
 struct Node {
     string name;
@@ -29,82 +22,6 @@ vector<string> files;
 map<string, Node*> datas;
 time_t livetime;
 int next_idx;
-
-std::string getExtension(const std::string& fileName, bool includeDot) {
-	std::string::size_type dotPos = fileName.rfind(".");
-	if (dotPos != std::string::npos) {
-		string extension = fileName.substr(dotPos + (includeDot ? 0 : 1));
-        std::for_each(extension.begin(), extension.end(), [](char &c) { c = ::tolower(c); });
-        return extension;
-	}
-	return "";
-}
-
-#ifdef _WIN32
-
-void searchFilesByType(const string &path, const string &type) {
-    _finddata_t file;
-    std::string filepath = path + "/*";
-    intptr_t handle;
-
-    if ( (int)(handle = _findfirst(filepath.c_str(), &file)) == -1 ) {
-        return;
-    }
-
-    do {
-        if (file.attrib & _A_SUBDIR) {
-            std::string s = file.name;
-            if (s == "." || s == "..")
-                continue;
-
-            std::string dirname = path + '/' + file.name;
-            searchFilesByType(dirname, type);
-
-        } else {
-            if (getExtension(file.name, false).compare(type)==0) {
-                std::string filename = path + '/' + file.name;
-                files.push_back(filename);
-            }
-        }
-
-    } while( _findnext(handle, &file) == 0 );
-
-    _findclose(handle);
-}
-
-#else
-
-void searchFilesByType(const string &path, const string &type) {
-    DIR *p_dir;
-    struct dirent *p_dirent;
-
-    if((p_dir = opendir(path.c_str())) == NULL) {
-        return;
-    }
-
-    while((p_dirent = readdir(p_dir))) {
-        if (DT_REG == p_dirent->d_type) {
-            // normal type file
-            if (getExtension(p_dirent->d_name, false).compare(type)==0) {
-                std::string filepath = path + '/' + p_dirent->d_name;
-                files.push_back(filepath);
-            }
-
-        }else if (DT_DIR == p_dirent->d_type) {
-            // directory
-            std::string s = p_dirent->d_name;
-            if (s == "." || s == "..")
-                continue;
-                
-            std::string dirpath = path + '/' + p_dirent->d_name;
-            searchFilesByType(dirpath, type);
-        }
-    }
-
-    closedir(p_dir);
-}
-
-#endif
 
 int getFileIdx(const string &filepath) {
     auto it = find(files.begin(), files.end(), filepath);
@@ -125,7 +42,9 @@ void updateData(string &filepath, time_t &tm, time_t now, Node *node) {
 }
 
 int main(int argc, char *argv[]) {
-    CSimpleIniA config;
+	bool utf8 = true;
+	bool multiKey = true;
+    CSimpleIniA config(utf8, multiKey);
 
     // load from a data file
     SI_Error rc = config.LoadFile(CONFIG);
@@ -138,24 +57,27 @@ int main(int argc, char *argv[]) {
 
 	CSimpleIniA::TNamesDepend pathes;
     config.GetAllValues("PATH", "path", pathes);
+	pathes.sort(CSimpleIniA::Entry::LoadOrder());
 
 	CSimpleIniA::TNamesDepend types;
     config.GetAllValues("TYPE", "type", types);
+	types.sort(CSimpleIniA::Entry::LoadOrder());
 
 	CSimpleIniA::TNamesDepend names;
     config.GetAllValues("NAME", "name", names);
+	names.sort(CSimpleIniA::Entry::LoadOrder());
 
 	CSimpleIniA::TNamesDepend::const_iterator it0;
 	CSimpleIniA::TNamesDepend::const_iterator it1;
     files.clear();
 	for (it0 = pathes.begin(); it0 != pathes.end(); ++it0) {
 		for (it1 = types.begin(); it1 != types.end(); ++it1) {
-            searchFilesByType(it0->pItem, it1->pItem);
+            searchFilesByType(it0->pItem, it1->pItem, files);
         }
 	}
     sort(files.begin(), files.end());
 
-    CSimpleIniA data;
+    CSimpleIniA data(utf8, !multiKey);
     rc = data.LoadFile(DATA);
 
     datas.clear();
@@ -175,22 +97,38 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    char s_tm[64];
+    char s_tmp[BUF_LEN];
     time_t now = time(NULL);
 	for (it3 = names.begin(); it3 != names.end(); ++it3) {
         string filepath;
         time_t tm;
         updateData(filepath, tm, now, datas[it3->pItem]);
+        
+        // modify data
         data.SetValue(it3->pItem, "filepath", filepath.c_str());
-        sprintf(s_tm, "%lld", tm);
-        data.SetValue(it3->pItem, "tm", s_tm);
+        snprintf(s_tmp, BUF_LEN, "%lld", tm);
+        data.SetValue(it3->pItem, "tm", s_tmp);
 
-#if _WIN32
-        SetEnvironmentVariable(it3->pItem, filepath.c_str());
-#else
-        setenv(it3->pItem, filepath.c_str(), 1);
-#endif
+        // modify system environment variable
+
+        // 1. system call
+        // snprintf(s_tmp, BUF_LEN, "set %s=\"%s\"", it3->pItem, filepath.c_str());
+        // system(s_tmp);
+
+        // 2. win32 API
+        // snprintf(s_tmp, BUF_LEN, "\"%s\"", filepath.c_str());
+        // bool suc = SetEnvironmentVariable(it3->pItem, s_tmp);
+        // if (!suc) cout << GetLastError() << endl;
+
+        // 3. putenv
+        // snprintf(s_tmp, BUF_LEN, "%s=\"%s\"", it3->pItem, filepath.c_str());
+        // putenv(s_tmp);
+        
+        snprintf(s_tmp, BUF_LEN, "\"%s\"", filepath.c_str());
+        setEnvVar(it3->pItem, s_tmp);
     }
+
+    // save file
     rc = data.SaveFile(DATA);
     if (rc != SI_OK) {
         cout << "SAVING " << DATA << " ERROR" << endl;
