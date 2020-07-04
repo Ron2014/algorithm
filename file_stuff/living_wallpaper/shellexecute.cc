@@ -1,4 +1,4 @@
-#pragma comment( linker, "/subsystem:/"windows/" /entry:/"mainCRTStartup/"" ) 
+// #pragma comment( linker, "/subsystem:/"windows/" /entry:/"mainCRTStartup/"" ) 
 
 #ifdef _WIN32
 #include <Windows.h>

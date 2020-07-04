@@ -22,7 +22,11 @@ set_target_properties(ExecuteShell PROPERTIES COMPILE_FLAGS ${CurCompileFlags})
 set_target_properties(WallPaper PROPERTIES COMPILE_FLAGS ${CurCompileFlags})
 endif()
 
-add_custom_command(TARGET WallPaper POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/config/*.*"
-        $<TARGET_FILE_DIR:WallPaper>)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+
+# copy all file from source directory
+add_custom_target(
+    copy-files ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${PROJECT_SOURCE_DIR}/config
+            $<TARGET_FILE_DIR:WallPaper>)
