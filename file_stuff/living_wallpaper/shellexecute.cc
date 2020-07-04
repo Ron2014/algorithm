@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include "path.h"
+#include "hideconsole.h"
 using namespace std;
 
 void mySystem(const string& cmd, const string& par)
@@ -30,8 +31,7 @@ void mySystem(const string& cmd, const string& par)
 int main(int argc, const char *argv[]) {
     if (argc <= 1) return 1;
     
-	HWND hwnd = GetForegroundWindow();
-	ShowWindow(hwnd, false);
+	HideConsole();
 
     string path = getPath(__FILE__);
 #ifdef _WIN32
