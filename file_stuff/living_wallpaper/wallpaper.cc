@@ -44,12 +44,7 @@ void updateData(string &filepath, time_t &tm, time_t now, Node *node) {
 
 int main(int argc, char *argv[]) {
     HideConsole();
-    string path = getPath(__FILE__);
-#ifdef _WIN32
-    SetCurrentDirectory(path.c_str());
-#else
-    chdir(path.c_str());
-#endif
+    AdaptWorkingPath();
 
     freopen("./out.log", "w", stdout);
     freopen("./err.log", "w", stderr);
@@ -61,7 +56,7 @@ int main(int argc, char *argv[]) {
     // load from a data file
     SI_Error rc = config.LoadFile(CONFIG);
     if (rc != SI_OK) {
-        cout << "loading " << CONFIG << " ERROR" << endl;
+        cerr << "loading " << CONFIG << " ERROR" << endl;
         fclose(stdout);
         fclose(stderr);
         return 1;
@@ -132,7 +127,7 @@ int main(int argc, char *argv[]) {
         // 2. win32 API
         // snprintf(s_tmp, BUF_LEN, "\"%s\"", filepath.c_str());
         // bool suc = SetEnvironmentVariable(it3->pItem, s_tmp);
-        // if (!suc) cout << GetLastError() << endl;
+        // if (!suc) cerr << GetLastError() << endl;
 
         // 3. putenv
         // snprintf(s_tmp, BUF_LEN, "%s=\"%s\"", it3->pItem, filepath.c_str());
@@ -145,7 +140,7 @@ int main(int argc, char *argv[]) {
     // save file
     rc = data.SaveFile(DATA);
     if (rc != SI_OK) {
-        cout << "SAVING " << DATA << " ERROR" << endl;
+        cerr << "SAVING " << DATA << " ERROR" << endl;
         fclose(stdout);
         fclose(stderr);
         return 1;

@@ -32,14 +32,7 @@ int main(int argc, const char *argv[]) {
     if (argc <= 1) return 1;
     
 	HideConsole();
-
-    string path = getPath(__FILE__);
-#ifdef _WIN32
-    SetCurrentDirectory(path.c_str());
-#else
-    chdir(path.c_str());
-#endif
-    // system(param.str().c_str());
+    AdaptWorkingPath();
 
     stringstream param;
     for (int i=2; *(argv+i); i++) {

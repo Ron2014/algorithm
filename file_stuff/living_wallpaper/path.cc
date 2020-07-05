@@ -9,6 +9,7 @@
 #endif
 
 #include <algorithm>
+#include <iostream>
 
 static std::string::size_type 
 FindMax(std::string::size_type a, std::string::size_type b) {
@@ -108,3 +109,16 @@ void searchFilesByType(const string &path, const string &type, vector<string> fi
 }
 
 #endif
+
+void AdaptWorkingPath() {
+    // __FILE__ is the path of source file, not the executable
+    //     string path = getPath(__FILE__);
+    cout << "__FILE__:" << __FILE__ << endl;
+    cout << "_pgmptr:" << _pgmptr << endl;
+    string path = getPath(_pgmptr);
+#ifdef _WIN32
+    SetCurrentDirectory(path.c_str());
+#else
+    chdir(path.c_str());
+#endif
+}

@@ -1,2 +1,4 @@
-pushd E:\GitHub\algorithm\file_stuff\living_wallpaper
-start /B WallPaper.exe
+@echo off
+pushd %~dp0
+start /B ExecuteShell.exe WallPaper.exe
+popd

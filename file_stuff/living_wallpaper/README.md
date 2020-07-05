@@ -36,14 +36,14 @@ backgroundImage 支持环境变量读取.
 
 **子进程无法更改父进程的环境变量.** 所有程序都是通过操作系统启动的, 我试了3种API, 均无法实现.
 
-最后得出结论, 只有两条路可以选择:
+得出结论, 只有两条路可以选择:
 
 1. 修改Windows注册表
 2. 还是修改json文件方便些啊 >_<
 
-## 最后
+### 自己的选择
 
-老老实实的我, 还是不想用json做, 使用注册表API果然可以完成这些功能.
+老老实实的我, 还是不想用json做(字符串处理太无聊), 使用注册表API试了一下, 果然可以完成这些功能.
 
 所以对这个工程, 你只要
 
@@ -56,6 +56,10 @@ backgroundImage 支持环境变量读取.
 ```batch
 schtasks /create /tn Living Wallpaper For Terminal /tr run.bat /sc minute /mo 1
 ```
+
+### 修改注册表, exe 就需要 admin 权限
+
+这个我交给了 setup.bat 完成.
 
 ## Windows的窗口隐藏(后台运行)
 
@@ -90,3 +94,27 @@ CreateProcess 会有 crash
 ```
 
 只是这个方法有个BUG, 程序触发时千万别切换窗口, 不然你的窗口就真找不到了.
+
+当然这个方法明显的弊端是 GetForegroundWindow. 我将这个接口改成搜索自己的窗口句柄了.
+
+## 文件的移动
+
+这个工程涉及的静态文件太多, 我全部都放到 config/ 里面了.
+
+为了编译工程时能自动移动文件, 我添加了 CMakeFiles.txt 中的 add_custom_target 部分.
+
+## 操作说明
+
+1. mkdir build
+2. cd build
+3. cmake ..
+4. cmake --build . --config release
+
+然后鼠标进入到 Release 目录
+
+对 setup.bat 右键使用 "Run As Administrator".
+
+setup.bat 做了两件事
+
+1. 赋予 WallPaper.exe 'Run As Administrator' 权限.
+2. 添加计划任务.

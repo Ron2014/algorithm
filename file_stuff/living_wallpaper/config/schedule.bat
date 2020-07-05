@@ -1,1 +1,0 @@
-schtasks /create /tn Living_Wallpaper_For_Terminal /tr %~dp0run.vbs /sc minute /mo 30
