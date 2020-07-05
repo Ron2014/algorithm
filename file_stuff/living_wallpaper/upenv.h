@@ -1,1 +1,0 @@
-void setEnvVar(const char *key, const char *value);
