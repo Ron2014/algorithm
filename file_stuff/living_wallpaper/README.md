@@ -118,9 +118,9 @@ CreateProcess 会有 crash
 3. cmake ..
 4. cmake --build . --config release
 
-然后鼠标进入到 Release 目录
+然后资源管理器进入到 Release 目录
 
-对 setup.bat 右键使用 "Run As Administrator".
+对 setup.bat 鼠标右键使用 "Run As Administrator".
 
 setup.bat 做了两件事
 
