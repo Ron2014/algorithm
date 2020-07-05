@@ -118,3 +118,7 @@ setup.bat 做了两件事
 
 1. 赋予 WallPaper.exe 'Run As Administrator' 权限.
 2. 添加计划任务.
+
+环境变量有了, 这时候, 可以打开 Windows Termianal, 菜单栏/设置(`CTRL+,`) 打开 settings.json
+
+将 backgroundImage 逐个设置为 config.ini 中 [NAME] 对应的值
