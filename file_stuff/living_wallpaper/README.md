@@ -122,3 +122,9 @@ setup.bat 做了两件事
 环境变量有了, 这时候, 可以打开 Windows Termianal, 菜单栏/设置(`CTRL+,`) 打开 settings.json
 
 将 backgroundImage 逐个设置为 config.ini 中 [NAME] 对应的值
+
+## 一些絮叨
+
+需要注意的是, 一个 Windows Terminal 进程 其实是操作系统进程的子进程, 环境变量在子进程中有缓存.
+
+如果你更新了 data.ini 想立即看到效果, 请新开一个 Windows Terminal, 而不是仅打开一个 Tab 页.
