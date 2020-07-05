@@ -10,7 +10,13 @@
                 "backgroundImageStretchMode" : "none"
 ```
 
-现在想要这样的功能, 每次打开一个 panel 会读取不同的背景图 (格式为gif/jpg/png)
+![img](https://raw.githubusercontent.com/Ron2014/Ron2014.github.io/master/assets/images/livingwallpaper.gif)
+
+对. 它支持动图.
+
+我给每个系统都配了背景图, 但是还是不太满足.
+
+现在想要这样的功能, 指定一些存放图片的路径, 每次打开一个 panel 会读取不同的背景图 (格式为gif/jpg/png)
 
 保证每个 panel 的背景图是不一样的, 以免切换窗口时会认错.
 
