@@ -1,24 +1,93 @@
-#include <list>
 #include <map>
-#include <algorithm>
+#include <iostream>
 using namespace std;
+typedef struct tagDLinkNode
+{
+    int key;
+    int val;
+    tagDLinkNode *prev;
+    tagDLinkNode *next;
+} DLinkNode;
 
+class DLink
+{
+public:
+    DLink()
+    {
+        m_pHead = NULL;
+        m_pTail = NULL;
+    }
+
+    int pop_front()
+    {
+        // 淘汰链头
+        if (m_pHead)
+        {
+            DLinkNode *pNode = m_pHead;           
+            remove(pNode);
+            return pNode->key;
+        }
+        return -1;
+    }
+
+    void push_back(DLinkNode *pNode)
+    {
+        // 最新访问插入链尾
+        if (!pNode) return;
+        if (m_pTail)
+        {
+            m_pTail->next = pNode;
+        }
+        else
+        {
+            m_pHead = pNode;
+        }
+        pNode->prev = m_pTail;
+        pNode->next = NULL;
+        m_pTail = pNode;
+    }
+
+    void remove(DLinkNode *pNode)
+    {
+        if (!pNode) return;
+        if (pNode->prev)
+        {
+            pNode->prev->next = pNode->next;
+        }
+        if (pNode->next)
+        {
+            pNode->next->prev = pNode->prev;
+        }
+        if (m_pHead == pNode)
+        {
+            m_pHead = pNode->next;
+        }
+        if (m_pTail == pNode)
+        {
+            m_pTail = pNode->prev;
+        }
+        pNode->prev = NULL;
+        pNode->next = NULL;
+    }
+private:
+    DLinkNode *m_pHead;
+    DLinkNode *m_pTail;
+};
 
 class LRUCache {
 public:
     LRUCache(int capacity) {
         m_iCap = capacity;
         m_map.clear();
-        m_list.clear();
     }
     
     int get(int key) {
-        list<int>::iterator it = find(m_list.begin(), m_list.end(), key);
-        if (it != m_list.end())
+        map<int, DLinkNode>::iterator it = m_map.find(key);
+        if (it != m_map.end())
         {
-            m_list.erase(it);
-            m_list.push_back(key);
-            return m_map[key];
+            m_dlink.remove(&it->second);
+            m_dlink.push_back(&it->second);
+            return it->second.val;
         }
         return -1;
     }
@@ -33,19 +102,20 @@ public:
         {
             if (m_iCap <= m_map.size())
             {
-                int last_key = m_list.front();
-                m_list.pop_front();
+                int last_key = m_dlink.pop_front();
                 m_map.erase(last_key);
             }
-            m_list.push_back(key);
+            DLinkNode &stNode = m_map[key];
+            stNode.key = key;
+            m_dlink.push_back(&stNode);
         }
-        m_map[key] = value;
+        m_map[key].val = value;
     }
 
 private:
     int m_iCap;
-    map<int, int> m_map;
-    list<int> m_list;
+    map<int, DLinkNode> m_map;      // map 存放数据
+    DLink m_dlink;                  // dlink 双链记录访问顺序
 };
 
 /**
