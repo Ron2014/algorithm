@@ -42,12 +42,12 @@ grid[r][c] 要么是 0 ，要么是 1 。
 using namespace std;
 
 // 右 左 下 上
+const int di[] = {0,0,1,-1};
+const int dj[] = {1,-1,0,0};
+const int DIRECT_CNT = 4;
+
 class Solution
 {
-    int di[] = {0,0,1,-1};
-    int dj[] = {1,-1,0,0};
-    int DIRECT_CNT = 4;
-
     void bfs_move(vector<vector<bool>> &dp, int l, int t, int m, int n, int stampHeight, int stampWidth, vector<vector<bool>> &visited, int &vcnt)
     {
         queue<pair<int,int>> q;
